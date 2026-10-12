@@ -1,0 +1,329 @@
+description: Lokaler Ollama Benchmark für Java Spring Boot, React und Fullstack Aufgaben
+
+providers:
+  - id: ollama:chat:qwen3.5:9b-q8_0
+    label: qwen3.5:9b-q8_0
+    config:
+      keep_alive: "0s"
+  - id: ollama:chat:gemma4:12b-it-q8_0
+    label: gemma4:12b-it-q8_0
+    config:
+      keep_alive: "0s"
+  - id: ollama:chat:MrScratchcat22/IQuest-Coder-V1:14b
+    label: MrScratchcat22/IQuest-Coder-V1:14b
+    config:
+      keep_alive: "0s"
+  - id: ollama:chat:gemma4:e4b-it-q8_0
+    label: gemma4:e4b-it-q8_0
+    config:
+      keep_alive: "0s"
+  - id: ollama:chat:gemma4:12b-it-q4_K_M
+    label: gemma4:12b-it-q4_K_M
+    config:
+      keep_alive: "0s"
+
+prompts:
+  - file://prompts/software-engineer.txt
+
+tests:
+  - description: JS-001 Spring CRUD Controller
+    vars:
+      task: |
+        Erzeuge einen Spring Boot REST Controller für Customer.
+
+        Anforderungen:
+        - Basisroute: /api/customers
+        - CRUD Endpunkte für list, getById, create, update, delete
+        - Nutze ResponseEntity
+        - Nutze Constructor Injection
+        - Kein Field Injection
+        - Service heißt CustomerService
+        - DTOs heißen CustomerResponse, CreateCustomerRequest und UpdateCustomerRequest
+        - Nutze sinnvolle HTTP Status Codes
+    assert:
+      - type: contains
+        value: "@RestController"
+      - type: contains
+        value: "@RequestMapping"
+      - type: contains
+        value: "/api/customers"
+      - type: contains
+        value: "@GetMapping"
+      - type: contains
+        value: "@PostMapping"
+      - type: contains
+        value: "@PutMapping"
+      - type: contains
+        value: "@DeleteMapping"
+      - type: contains
+        value: "ResponseEntity"
+      - type: contains
+        value: "CustomerService"
+      - type: contains
+        value: "CustomerResponse"
+      - type: contains
+        value: "CreateCustomerRequest"
+      - type: contains
+        value: "UpdateCustomerRequest"
+      - type: not-contains
+        value: "@Autowired"
+
+  - description: JS-002 Spring DTO Validation
+    vars:
+      task: |
+        Erzeuge Java DTOs für Customer Create und Update Requests.
+
+        Anforderungen:
+        - CreateCustomerRequest:
+          - firstName: Pflichtfeld, 2 bis 50 Zeichen
+          - lastName: Pflichtfeld, 2 bis 50 Zeichen
+          - email: Pflichtfeld, valide E-Mail
+          - age: optional, mindestens 18
+        - UpdateCustomerRequest:
+          - firstName: optional, falls vorhanden 2 bis 50 Zeichen
+          - lastName: optional, falls vorhanden 2 bis 50 Zeichen
+          - email: optional, falls vorhanden valide E-Mail
+          - age: optional, mindestens 18
+        - Nutze Jakarta Bean Validation
+    assert:
+      - type: contains
+        value: "CreateCustomerRequest"
+      - type: contains
+        value: "UpdateCustomerRequest"
+      - type: contains
+        value: "@NotBlank"
+      - type: contains
+        value: "@Size"
+      - type: contains
+        value: "@Email"
+      - type: contains
+        value: "@Min"
+      - type: contains
+        value: "jakarta.validation"
+
+  - description: JS-003 Spring Exception Handling
+    vars:
+      task: |
+        Erzeuge ein globales Exception Handling für eine Spring Boot REST API.
+
+        Anforderungen:
+        - Nutze @RestControllerAdvice
+        - Behandle ResourceNotFoundException mit HTTP 404
+        - Behandle MethodArgumentNotValidException mit HTTP 400
+        - Behandle allgemeine Exceptions mit HTTP 500
+        - Gib ein ErrorResponse DTO zurück
+        - ErrorResponse enthält timestamp, status, error, message und path
+    assert:
+      - type: contains
+        value: "@RestControllerAdvice"
+      - type: contains
+        value: "@ExceptionHandler"
+      - type: contains
+        value: "ResourceNotFoundException"
+      - type: contains
+        value: "MethodArgumentNotValidException"
+      - type: contains
+        value: "ErrorResponse"
+      - type: contains
+        value: "HttpStatus.NOT_FOUND"
+      - type: contains
+        value: "HttpStatus.BAD_REQUEST"
+      - type: contains
+        value: "HttpStatus.INTERNAL_SERVER_ERROR"
+
+  - description: JS-004 Spring Service Unit Test
+    vars:
+      task: |
+        Schreibe einen Unit Test für CustomerService mit JUnit 5 und Mockito.
+
+        Annahmen:
+        - CustomerService nutzt CustomerRepository
+        - CustomerRepository hat findById, save und deleteById
+        - Wenn Customer nicht gefunden wird, wird ResourceNotFoundException geworfen
+
+        Anforderungen:
+        - Test für getById success
+        - Test für getById not found
+        - Test für create
+        - Nutze @ExtendWith(MockitoExtension.class)
+        - Nutze @Mock und @InjectMocks
+    assert:
+      - type: contains
+        value: "@ExtendWith(MockitoExtension.class)"
+      - type: contains
+        value: "@Mock"
+      - type: contains
+        value: "@InjectMocks"
+      - type: contains
+        value: "CustomerRepository"
+      - type: contains
+        value: "CustomerService"
+      - type: contains
+        value: "when("
+      - type: contains
+        value: "assertThrows"
+      - type: contains
+        value: "verify"
+
+  - description: R-001 React Customer Form
+    vars:
+      task: |
+        Erzeuge eine React TypeScript Komponente CustomerForm.
+
+        Anforderungen:
+        - Props: initialValues, loading, onSubmit
+        - Felder: firstName, lastName, email
+        - Controlled Components
+        - Einfache Pflichtfeldvalidierung
+        - E-Mail Format grob prüfen
+        - Submit Button während loading deaktivieren
+        - Kein externes Form Framework
+    assert:
+      - type: contains
+        value: "CustomerForm"
+      - type: contains
+        value: "initialValues"
+      - type: contains
+        value: "loading"
+      - type: contains
+        value: "onSubmit"
+      - type: contains
+        value: "useState"
+      - type: contains
+        value: "firstName"
+      - type: contains
+        value: "lastName"
+      - type: contains
+        value: "email"
+      - type: not-contains
+        value: "formik"
+      - type: not-contains
+        value: "react-hook-form"
+
+  - description: R-002 React API Hook
+    vars:
+      task: |
+        Erzeuge einen React TypeScript Custom Hook useCustomers.
+
+        Anforderungen:
+        - Lädt Customers von /api/customers
+        - Stellt data, loading, error und refetch bereit
+        - Nutze fetch
+        - Behandle HTTP Fehler
+        - Vermeide State Updates nach unmount
+        - Keine externe Library wie axios oder react-query
+    assert:
+      - type: contains
+        value: "useCustomers"
+      - type: contains
+        value: "useState"
+      - type: contains
+        value: "useEffect"
+      - type: contains
+        value: "fetch"
+      - type: contains
+        value: "loading"
+      - type: contains
+        value: "error"
+      - type: contains
+        value: "refetch"
+      - type: contains
+        value: "/api/customers"
+      - type: not-contains
+        value: "axios"
+      - type: not-contains
+        value: "react-query"
+
+  - description: R-003 React Bugfix useEffect
+    vars:
+      task: |
+        Finde und korrigiere den Fehler in dieser React Komponente.
+
+        Code:
+        ```tsx
+        import React, { useEffect, useState } from "react";
+
+        export function CustomerList() {
+          const [customers, setCustomers] = useState([]);
+          const [loading, setLoading] = useState(false);
+
+          useEffect(() => {
+            setLoading(true);
+            fetch("/api/customers")
+              .then(res => res.json())
+              .then(data => {
+                setCustomers(data);
+                setLoading(false);
+              });
+          });
+
+          return (
+            <div>
+              {loading && <p>Loading...</p>}
+              {customers.map(customer => (
+                <div key={customer.id}>{customer.name}</div>
+              ))}
+            </div>
+          );
+        }
+        ```
+
+        Anforderungen:
+        - Erkläre kurz den Fehler
+        - Korrigiere die Endlosschleife
+        - Ergänze einfache Fehlerbehandlung
+        - Nutze TypeScript Typen für Customer
+    assert:
+      - type: contains
+        value: "useEffect"
+      - type: contains
+        value: "[]"
+      - type: contains
+        value: "Customer"
+      - type: contains
+        value: "error"
+      - type: contains
+        value: "catch"
+      - type: contains
+        value: "setLoading(false)"
+
+  - description: FS-001 Fullstack Customer Create Flow
+    vars:
+      task: |
+        Entwerfe einen einfachen Fullstack Create Flow für Customer.
+
+        Anforderungen Backend:
+        - Spring Boot POST /api/customers
+        - Request DTO mit firstName, lastName, email
+        - Validation
+        - ResponseEntity mit HTTP 201
+        - Service Methode create
+
+        Anforderungen Frontend:
+        - React TypeScript Formular
+        - POST Request an /api/customers
+        - Loading und Error State
+        - Erfolgreicher Submit ruft onCreated(customer) auf
+
+        Gib Backend- und Frontend-Code aus.
+    assert:
+      - type: contains
+        value: "@PostMapping"
+      - type: contains
+        value: "/api/customers"
+      - type: contains
+        value: "@Valid"
+      - type: contains
+        value: "ResponseEntity"
+      - type: contains
+        value: "CREATED"
+      - type: contains
+        value: "fetch"
+      - type: contains
+        value: "POST"
+      - type: contains
+        value: "onCreated"
+      - type: contains
+        value: "loading"
+      - type: contains
+        value: "error"

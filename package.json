@@ -1,0 +1,17 @@
+{
+  "name": "ollama-promptfoo-benchmark",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lokaler LLM Benchmark mit Ollama und promptfoo für Java Spring und React",
+  "scripts": {
+    "generate": "python3 generate_promptfoo_config.py",
+    "eval": "promptfoo eval --max-concurrency 1",
+    "eval:json": "promptfoo eval --max-concurrency 1 --output results/benchmark.json",
+    "eval:csv": "promptfoo eval --max-concurrency 1 --output results/benchmark.csv",
+    "view": "promptfoo view",
+    "clear": "promptfoo cache clear"
+  },
+  "devDependencies": {
+    "promptfoo": "^0.124.1"
+  }
+}
