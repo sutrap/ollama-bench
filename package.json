@@ -4,7 +4,7 @@
   "private": true,
   "description": "Lokaler LLM Benchmark mit Ollama und promptfoo für Java Spring und React",
   "scripts": {
-    "generate": "python3 generate_promptfoo_config.py",
+    "generate": "node scripts/generate-config.js",
     "eval": "promptfoo eval --max-concurrency 1",
     "eval:json": "promptfoo eval --max-concurrency 1 --output results/benchmark.json",
     "eval:csv": "promptfoo eval --max-concurrency 1 --output results/benchmark.csv",

@@ -1,8 +1,12 @@
-# Installation (Linux)
+# Installation
+
+Gilt für Linux und Windows. Plattformspezifische Unterschiede sind markiert.
 
 ## Voraussetzungen
 
 - [Node.js](https://nodejs.org) >= 18 (inkl. npm)
+- Python 3.9+ (für den Modell-Generator)
+  - Windows: beim Installieren die Option **„Add python.exe to PATH“** aktivieren
 - [Ollama](https://ollama.com) installiert und gestartet
 - Mindestens ein Modell heruntergeladen (`ollama pull <modell>`)
 
@@ -13,9 +17,14 @@ node --version
 ollama list
 ```
 
-## Schritt 1 – Abhängigkeiten installieren
+## Schritt 1 – Projekt herunterladen
 
-Im Projektverzeichnis:
+```bash
+git clone git@github.com:sutrap/ollama-bench.git
+cd ollama-bench
+```
+
+## Schritt 2 – Abhängigkeiten installieren
 
 ```bash
 npm install
@@ -23,10 +32,10 @@ npm install
 
 Installiert `promptfoo` als lokale Dev-Dependency (in `node_modules/`).
 
-## Schritt 2 – promptfoo aufrufen (Wichtig unter Linux)
+## Schritt 3 – promptfoo aufrufen (Wichtig auf beiden Plattformen)
 
-Promptfoo wird **nicht global** installiert. Unter Linux funktioniert der
-Aufruf nur über `npx`:
+Promptfoo wird **nicht global** installiert. Der Aufruf funktioniert über
+`npx`, auf **Linux und Windows gleichermaßen**:
 
 ```bash
 npx promptfoo --version
@@ -41,10 +50,10 @@ Hinweise:
   `npx`, da npm das lokale `node_modules/.bin/` in den PATH legt.
 - Nur direkt auf der Kommandozeile, außerhalb von npm-Skripten, immer die
   `npx`-Form verwenden: `npx promptfoo <befehl>`.
-- Eine globale Installation (`npm install -g promptfoo`) ist unter Linux
-  fehleranfällig und wird nicht unterstützt.
+- Eine globale Installation (`npm install -g promptfoo`) ist fehleranfällig
+  und wird nicht unterstützt.
 
-## Schritt 3 – Optional: Modell-Generator
+## Schritt 4 – Optional: Modell-Generator
 
 Der Generator zeigt eine Checkbox-Auswahl aller per `ollama list` verfügbaren
 Modelle. Für die TUI wird eine kleine Python-Bibliothek empfohlen:
@@ -53,26 +62,41 @@ Modelle. Für die TUI wird eine kleine Python-Bibliothek empfohlen:
 pip install simple-term-menu
 ```
 
+Windows, falls `pip` direkt nicht gefunden wird:
+
+```powershell
+py -m pip install simple-term-menu
+```
+
 Ohne diese Bibliothek fällt das Skript auf eine einfache nummerierte
 Mehrfachauswahl zurück.
 
-## Schritt 4 – Config erzeugen
+## Schritt 5 – Config erzeugen
 
-```bash
-python3 generate_promptfoo_config.py
-```
-
-oder über npm:
+Am einfachsten (plattformübergreifend) über npm:
 
 ```bash
 npm run generate
 ```
 
+oder direkt per Python:
+
+```bash
+# Linux
+python3 generate_promptfoo_config.py
+
+# Windows
+python generate_promptfoo_config.py
+```
+
+>`npm run generate` startet den Generator über einen Node-Wrapper, der
+>automatisch den passenden Python-Launcher findet (`py`/`python`/`python3`).
+
 Es werden nur die ausgewählten Modelle in den `providers`-Block der
 `promptfooconfig.yaml` geschrieben. Vor dem Überschreiben wird automatisch
 ein Backup als `promptfooconfig.yaml.bak` angelegt.
 
-## Schritt 5 – Benchmark starten
+## Schritt 6 – Benchmark starten
 
 ```bash
 npm run eval
@@ -86,7 +110,7 @@ npx promptfoo eval --max-concurrency 1
 
 Die Ergebnisse landen standardmäßig in `./results/`.
 
-## Schritt 6 – Ergebnisse ansehen
+## Schritt 7 – Ergebnisse ansehen
 
 ```bash
 npm run view
@@ -99,3 +123,11 @@ npm run view
 ```bash
 npm run clear
 ```
+
+## Plattform-Hinweise
+
+| | Linux | Windows |
+| --- | --- | --- |
+| Ollama installieren | `curl -fsSL https://ollama.com/install.sh \| sh` oder Paketmanager | Installer von [ollama.com](https://ollama.com) |
+| Python-Aufruf | `python3` | `python` (oder `py -3`) |
+| Shell | Bash | PowerShell / CMD (Befehle identisch) |
